@@ -1,37 +1,36 @@
 import { Link } from "react-router";
+import bg from "../../assets/images/Logo-Background.png";
 
 export function Welcome() {
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="max-w-1xl w-full text-center">
-        {/* Logo animé */}
-        {/*   <div className="mb-1 flex justify-center">
-          <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm animate-pulse-slow">
-            <img
-              src={images.logo.smartTest}
-              alt="SmartTest Logo"
-              className="w-40 h-auto"
-            />
-          </div>
-        </div>*/}
+    <div
+      className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center  relative"
+      style={{ backgroundImage: `url(${bg})` }}
+    >
+      {/* Overlay pour lisibilité 
+      <div className="absolute inset-0 bg-black/50"></div>
 
-        {/* Titres */}
-        <h1 className="text-5xl font-semibold text-[#E30613] mb-4 drop-shadow-lg">
-          Bienvenue sur SmartTest
+      {/* Contenu */}
+      <div className="relative z-10 text-center max-w-2xl w-full">
+        
+        {/* Titre */}
+        <h1 className="text-5xl font-semibold text-white mb-4 drop-shadow-lg">
+          Bienvenue sur FevOneROLL
         </h1>
-        <p className="text-xl text-[#E30613] mb-12 drop-shadow-sm">
+
+        {/* Sous-titre */}
+        <p className="text-xl text-white/90 mb-10 drop-shadow-sm">
           Gestion complète de vos bancs d'essai
         </p>
 
-        {/* Boutons */}
-        <div className="flex gap-4 justify-center flex-wrap">
-          <Link
-            to="/login"
-            className="px-20 py-4  text-white rounded-lg bg-[#E30613] hover:bg-[#E30613]/75 transition-all duration-300 shadow-md hover:shadow-xl font-medium"
-          >
-            Accéder à la plateforme{" "}
-          </Link>
-        </div>
+        {/* Bouton */}
+        <Link
+          to="/login"
+          className="inline-block px-20 py-4 text-[#E30613] rounded-lg bg-white hover:bg-white/75 transition-all duration-300 shadow-md hover:shadow-xl font-medium"
+        >
+          Accéder à la plateforme
+        </Link>
+
       </div>
     </div>
   );

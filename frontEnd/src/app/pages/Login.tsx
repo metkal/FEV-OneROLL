@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router";
 import { useState } from "react";
-import { images } from "../../assets";
+import { images } from "../../assets/images";
 import { Mail, Lock, ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
 export function Login() {
   const navigate = useNavigate();
