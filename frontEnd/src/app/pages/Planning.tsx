@@ -3,6 +3,179 @@ import { ChevronLeft, ChevronRight, Calendar, List } from "lucide-react";
 import { authFetch } from "../api";
 
 /* ================= TYPES ================= */
+interface DemandeEssai {
+  // =====================
+  // IDENTITÉ
+  // =====================
+  id?: number;
+  nomAuto?: string;
+  numeroProjet?: number;
+
+  statutGlobal?: "EN_COURS" | "FAIT" | "REJETEE";
+  statutDemande?: "EN_CREATION" | "VALIDEE";
+
+  // =====================
+  // RELATIONS (BACKEND)
+  // =====================
+  vehicule?: { id: number; identificateur: number };
+  cycle?: { id: number };
+  calage?: { id: number };
+  client?: { id: number; nom: string };
+
+  // =====================
+  // PROJET
+  // =====================
+  typeProjet?: string;
+
+  demandeur?: string;
+  technicien?: string;
+
+  banc?: string;
+  datePlanification?: string;
+  shift?: "MATIN" | "SOIR" | "NUIT";
+
+  // =====================
+  // CONDITIONS ESSAI
+  // =====================
+  besoinMaceration?: boolean;
+  temperatureMaceration?: number;
+  temperatureEau?: number;
+  hygrometrieEssai?: number;
+  activationSTT?: boolean;
+  temperatureEssai?: number;
+
+  // =====================
+  // BATTERIE / CLIM
+  // =====================
+  gestionBatterie12V?: string;
+  socDepart12V?: number;
+
+  activationClim?: boolean;
+  temperatureRegulationClim?: number;
+  chauffageHabitable?: boolean;
+
+  // =====================
+  // TYPE ESSAI
+  // =====================
+  typeEssai?: string;
+  verificationCoastDown?: boolean;
+  nombreDecelerations?: number;
+  commentaire?: string;
+
+  // =====================
+  // SAC / DÉBITS
+  // =====================
+  mesureSAC?: boolean;
+  debitCVsPhase1?: number;
+  debitCVsPhase2?: number;
+  debitCVsPhase3?: number;
+  debitCVsPhase4?: number;
+  debitCVsPhase5?: number;
+  debitCVsPhase6?: number;
+  debitCVsPhase7?: number;
+  debitCVsPhase8?: number;
+  debitCVsPhase9?: number;
+  debitCVsPhase10?: number;
+
+  // =====================
+  // PM / PN
+  // =====================
+  pm?: boolean;
+  debitPrelevement?: number;
+
+  pn10Nano?: boolean;
+  facteurDilutionPN10?: number;
+
+  pn23Nano?: boolean;
+  facteurDilutionPN23?: number;
+
+  // =====================
+  // GAZ BRUTS
+  // =====================
+  ligne1?: boolean;
+  pointPrelevementL1?: string;
+
+  ligne2?: boolean;
+  pointPrelevementL2?: string;
+
+  ligne3?: boolean;
+  pointPrelevementL3?: string;
+
+  microsot?: boolean;
+  pointPrelevementMicrosot?: string;
+
+  qcl1?: boolean;
+  pointPrelevementQCL1?: string;
+
+  qcl2?: boolean;
+  pointPrelevementQCL2?: string;
+
+  FITR?: boolean;
+  pointPrelevementFITR?: string;
+
+  egr?: boolean;
+
+  // =====================
+  // XCU
+  // =====================
+  xcu1?: boolean;
+  software1?: string;
+  calibration1?: string;
+  experiment1?: string;
+
+  xcu2?: boolean;
+  software2?: string;
+  calibration2?: string;
+
+  xcu3?: boolean;
+  software3?: string;
+  calibration3?: string;
+
+  acquisitionEOBD?: boolean;
+  typeAcquisition?: string;
+
+  // =====================
+  // MESURE COURANT
+  // =====================
+  mesureCourant?: boolean;
+  indiceCourant?: number;
+  numeroTermocoupleCourant?: number;
+  typeMesureCourant?: number;
+
+  // =====================
+  // CONFIG BANC
+  // =====================
+  capot?: "OUVERT" | "FERME";
+  soufflante?: string;
+  qCvs?: number;
+  carflow?: boolean;
+
+  // =====================
+  // MESURE TENSION
+  // =====================
+  mesureTension?: boolean;
+  indiceTension?: number;
+  numeroTermocoupleTension?: number;
+  typeMesureTension?: string;
+
+  // =====================
+  // THERMOCOUPLES
+  // =====================
+  thermocouples?: boolean;
+  indicethermocouples?: number;
+  numeroTermocouple?: number;
+  typeMesurethermocouples?: string;
+
+  // =====================
+  // SONDE LAMBDA
+  // =====================
+  sondeLambdaLA4?: boolean;
+  indicesondeLambdaLA4?: number;
+  numerosondeLambdaLA4?: number;
+  typeMesuresondeLambdaLA4?: string;
+  
+}
+
 type Slot = {
   time: string;
   numeroProjet: string;
@@ -133,7 +306,8 @@ function ListView({
 
 /* ================= MAIN COMPONENT ================= */
 export function Planning() {
-  const [demandes,             setDemandes]             = useState<any[]>([]);
+  const [demandes, setDemandes] = useState<DemandeEssai[]>([]);
+  const [loading, setLoading] = useState(true);
   const [weekOffset,           setWeekOffset]           = useState(0);
   const [techniciens,          setTechniciens]          = useState<Technicien[]>([]);
   const [filterDate,           setFilterDate]           = useState("");
@@ -163,7 +337,27 @@ export function Planning() {
     () => new Map(techniciens.map((t) => [Number(t.id), `${t.nom ?? ""} ${t.prenom ?? ""}`.trim()])),
     [techniciens],
   );
+const fetchDemandes = async () => {
+    try {
+      setLoading(true);
 
+      const res = await authFetch("/demandes-essai");
+
+      const data = res?.data ?? res?.content ?? res?._embedded?.demandes ?? res;
+
+      setDemandes(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Erreur chargement demandes", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+useEffect(() => {
+    fetchDemandes();
+   
+   
+  }, []);
   /* ── Transform ── */
   const planningData: DayPlanning[] = useMemo(() =>
     weekDays.map((day) => ({

@@ -913,7 +913,7 @@ export function Demandes() {
 
   useEffect(() => {
     if (
-      modalMode !== "add" ||
+      (modalMode !== "add" && modalMode !== "edit") ||
       !form.typeProjet ||
       !form.demandeur ||
       !form.vehiculeId ||

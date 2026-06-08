@@ -438,18 +438,23 @@ export function Profile() {
       {/* PHOTO MODAL */}
       {isEditingPhoto && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-card p-4 rounded-xl border space-y-3">
+          <div className="bg-card p-4 rounded-xl border space-y-3 w-[400px]">
             <h2 className="font-bold text-lg">Changer photo de profil</h2>
 
-            <input
-              type="file"
-              onChange={(e) => {
-                const file = e.target.files?.[0] || null;
-                setNewImageFile(file);
-                setImageError(""); // reset erreur quand on change fichier
-              }}
-              className="w-full border p-2 rounded"
-            />
+            <label className="cursor-pointer flex items-center justify-center w-full border p-2 rounded bg-gray-50 hover:bg-gray-100">
+              {newImageFile ? newImageFile.name : "Sélectionner une image"}
+
+              <input
+                type="file"
+                className="hidden"
+                accept=".jpg,.jpeg,.png"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setNewImageFile(file);
+                  setImageError("");
+                }}
+              />
+            </label>
 
             {/* 👇 MESSAGE ERREUR */}
             {imageError && (

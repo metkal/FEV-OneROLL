@@ -1,17 +1,30 @@
 import { Link, useNavigate } from "react-router";
-import { useState } from "react";
-import { images } from "../../assets/images";
-import { Mail, Lock, ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import logo from "../../assets/images/Logo 2.png";
+ 
 export function Login() {
   const navigate = useNavigate();
+ 
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+ 
+  const [startAnimation, setStartAnimation] = useState(false);
+ 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStartAnimation(true);
+    }, 2000);
+ 
+    return () => clearTimeout(timer);
+  }, []);
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
+ 
     try {
       const res = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
@@ -19,20 +32,21 @@ export function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: email,
-          motDePasse: motDePasse,
+          email,
+          motDePasse,
         }),
       });
-
+ 
       let data;
-
+ 
       const contentType = res.headers.get("content-type");
-
+ 
       if (contentType && contentType.includes("application/json")) {
         data = await res.json();
       } else {
         data = await res.text();
       }
+ 
       if (!res.ok) {
         throw new Error(
           typeof data === "string"
@@ -40,115 +54,141 @@ export function Login() {
             : data?.message || "Email ou mot de passe incorrect",
         );
       }
-
+ 
       localStorage.setItem("token", data.token);
       navigate("/app");
     } catch (err: any) {
       setError(err.message || "Email ou mot de passe incorrect");
     }
   };
-
+ 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-2">
-      {" "}
-      <div className="w-full max-w-md">
-        {/* Logo Section - Décommentée et stylisée */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center mb-4">
-            {/* Remplacer par ton vrai chemin d'image */}
-            {/*<h2 className="text-2xl font-bold text-foreground-800">
-              Smart<span className="text-[#E30613]">Test</span>
-            </h2>*/}
-          </div>
+    <div className="min-h-screen bg-background overflow-hidden">
+      <div className="flex items-center justify-center min-h-screen gap-2">
+        {/* Partie Logo (50%) */}
+        <div
+          className={`
+          w-1/2 flex justify-center items-center
+          transition-all duration-[1500ms] ease-in-out
+          ${startAnimation ? "opacity-100" : "opacity-0"}
+        `}
+        >
+          <img src={logo} alt="Logo" className="w-[450px] max-w-[80%] h-auto" />
         </div>
-
-        <div className="bg-card shadow-2xl rounded-3xl p-8 md:p-10 border border-border">
-          {" "}
-          <h1 className="text-3xl font-extrabold text-[#E30613] text-center mb-8">
-            Connexion
-          </h1>
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-semibold text-foreground-700 mb-2">
-                Email professionnel <span className="text-[#E30613]">*</span>
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full h-12 px-4 border border-border bg-background text-foreground rounded-xl
-focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-                placeholder="nom@entreprise.com"
-              />
-            </div>
-            {/* Mot de passe */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-semibold text-foreground-700">
-                  Mot de passe <span className="text-[#E30613]">*</span>
-                </label>
-              </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={motDePasse}
-                  onChange={(e) => setMotDePasse(e.target.value)}
-                  required
-               className="w-full h-12 px-4 border border-border bg-background text-foreground rounded-xl
-focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-                  placeholder="••••••••"
-                />
+ 
+        {/* Partie Formulaire (50%) */}
+        <div
+          className={`
+          w-1/2 flex justify-center items-center px-6
+          transition-all duration-[1500ms] ease-in-out
+          ${
+            startAnimation
+              ? "opacity-100 translate-x-0"
+              : "opacity-0 translate-x-20"
+          }
+        `}
+        >
+          <div className="w-full max-w-md">
+            <div className="bg-card shadow-2xl rounded-3xl p-8 md:p-10 border border-border">
+              <h1 className="text-3xl font-extrabold text-[#E30613] text-center mb-8">
+                Connexion
+              </h1>
+ 
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Email */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2">
+                    Email professionnel
+                    <span className="text-[#E30613]"> *</span>
+                  </label>
+ 
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="nom@entreprise.com"
+                    className="w-full h-12 px-4 border border-border rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+ 
+                {/* Mot de passe */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-semibold">
+                      Mot de passe
+                      <span className="text-[#E30613]"> *</span>
+                    </label>
+                  </div>
+ 
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={motDePasse}
+                      onChange={(e) => setMotDePasse(e.target.value)}
+                      required
+                      placeholder="••••••••"
+                      className="w-full h-12 px-4 border border-border rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+ 
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+ 
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs hover:text-[#E30613]"
+                  >
+                    Mot de passe oublié ?
+                  </Link>
+                </div>
+ 
+                {/* Erreur */}
+                <div className="min-h-[20px]">
+                  {error && (
+                    <p className="text-red-500 text-sm text-center">{error}</p>
+                  )}
+                </div>
+ 
+                {/* Bouton */}
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-500 hover:text-[#E30613]"
+                  type="submit"
+                  className="w-full py-3.5 bg-[#c40510] text-white rounded-xl font-bold text-lg hover:bg-[#E30613] transition-all"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  Se connecter
                 </button>
-              </div>
-
-              <Link
-                to="/forgot-password"
-                className="text-xs font-medium text-foreground-500 hover:text-[#E30613] transition-colors"
-              >
-                Mot de passe oublié ?
-              </Link>
+              </form>
             </div>
-            {/* Bouton de soumission */}
-            <div className="min-h-[20px]">
-              {error && (
-                <p className="text-red-500 text-sm text-center">{error}</p>
-              )}
-            </div>{" "}
-            <button
-              type="submit"
-              className="w-full py-3.5 bg-[#c40510] text-white rounded-xl font-bold text-lg hover:bg-[#E30613] active:scale-[0.98] transition-all shadow-lg mt-1"
-            >
-              Se connecter
-            </button>
-            {/*<div className="text-center">
+ 
+            <div className="text-center mt-4">
               <Link
-                to="/signup"
+                to="/"
                 className="text-sm text-foreground-600 hover:text-black"
               >
-                Pas encore de compte ?{" "}
-                <span className="font-medium">
-                  Créer un compte
-                </span>
+                ← Retour à l'accueil
               </Link>
             </div>
-            */}
-          </form>
+          </div>
         </div>
-
-        <div className="text-center mt-4">
-          <Link to="/" className="text-sm text-foreground-600 hover:text-black">
-            ← Retour à l'accueil
-          </Link>
-        </div>
+ 
+        {/* Logo au centre pendant 2 secondes */}
+        {!startAnimation && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-background">
+            <img
+              src={logo}
+              alt="Logo"
+              className="w-[450px] max-w-[80%] h-auto"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 }
+ 
+ 

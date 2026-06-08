@@ -721,7 +721,7 @@ focus:outline-none focus:ring-2 focus:ring-ring transition"
                       Sélectionner
                     </option>
 
-                    {["CA001", "CA002", "CA003", "OZ001"].map((s) => (
+                    {["OZ001", "OZ002", "OZ003", "OZ004"].map((s) => (
                       <option key={s} value={s}>
                         {s}
                       </option>

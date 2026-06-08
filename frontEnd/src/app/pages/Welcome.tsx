@@ -7,12 +7,11 @@ export function Welcome() {
       className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center  relative"
       style={{ backgroundImage: `url(${bg})` }}
     >
-      {/* Overlay pour lisibilité 
-      <div className="absolute inset-0 bg-black/50"></div>
+      {/*Overlay pour lisibilité */}
+      <div className="absolute inset-0 bg-cover bg-center blur-md"></div>
 
       {/* Contenu */}
       <div className="relative z-10 text-center max-w-2xl w-full">
-        
         {/* Titre */}
         <h1 className="text-5xl font-semibold text-white mb-4 drop-shadow-lg">
           Bienvenue sur FevOneROLL
@@ -30,7 +29,6 @@ export function Welcome() {
         >
           Accéder à la plateforme
         </Link>
-
       </div>
     </div>
   );
